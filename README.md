@@ -36,7 +36,8 @@ Instagram, Facebook, GitHub, Reddit, Pinterest, Telegram, Snapchat, Vimeo, Tumbl
 pkg update && pkg upgrade -y
 pkg install python -y
 pkg install git -y
-git clone https://github.com/Hackers-Colony/HCO-Social-Check
+pip install requests
+git clone https://github.com/Hackerscolonyofficial/HCO-Social-Check.git
 cd HCO-Social-Check
 python HCO-Social-Check.py
 
@@ -45,6 +46,7 @@ python HCO-Social-Check.py
 [ SCANNING USERNAME: cyberhunter ]
 
 ✔ Instagram   → TAKEN
+✔ Facebook    → TAKEN
 ✔ Reddit      → TAKEN
 ✖ GitHub      → AVAILABLE
 ✖ Pinterest   → AVAILABLE
