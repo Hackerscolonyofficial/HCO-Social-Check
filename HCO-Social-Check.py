@@ -1,70 +1,82 @@
 #!/usr/bin/env python3
-# HCO-Social-Check.py
-# By Azhar — Hackers Colony
-# GitHub ready Termux tool (colourful UI + tool-lock + YouTube redirect)
+# HCO-Social-Check.py - Ultimate OSINT Username Checker
+# By Azhar / Hackers Colony
 
-import os
-import time
-import webbrowser
-import requests
+import os, sys, time, random, requests
 
-YOUTUBE_LINK = "https://youtube.com/@hackers_colony_tech?si=pvdCWZggTIuGb0ya"
+YOUTUBE = "https://youtube.com/@hackers_colony_tech?si=pvdCWZggTIuGb0ya"
 
-# Terminal colours
-R = "\033[1;31m"   # Red Bold
-G = "\033[1;32m"   # Green
-Y = "\033[1;33m"   # Yellow
-C = "\033[1;36m"   # Cyan
-W = "\033[1;37m"   # White
+# Colors
+R = "\033[1;31m"
+G = "\033[1;32m"
+Y = "\033[1;33m"
+C = "\033[1;36m"
+W = "\033[1;37m"
 RESET = "\033[0m"
 
 def clear():
-    os.system("clear" if os.name != "nt" else "cls")
+    os.system("clear")
+
+def open_youtube():
+    os.system(f"xdg-open '{YOUTUBE}'")
+
+def matrix_effect(lines=20, delay=0.02):
+    chars = "01$#@"
+    for _ in range(lines):
+        print(G + "".join(random.choice(chars) for _ in range(60)) + RESET)
+        time.sleep(delay)
+
+def progress_bar(task, total=30):
+    for i in range(total):
+        sys.stdout.write(f"\r{C}{task}: [{G}{'=' * i}{' ' * (total - i)}{C}] {int((i/total)*100)}%{RESET}")
+        sys.stdout.flush()
+        time.sleep(0.04)
+    print()
+
+def hacker_spinner(text):
+    spinner = ["|","/","-","\\"]
+    for _ in range(8):
+        for s in spinner:
+            sys.stdout.write(f"\r{C}{text} {s}{RESET}")
+            sys.stdout.flush()
+            time.sleep(0.08)
+    sys.stdout.write("\r")
 
 def banner():
-    print(G + "╔" + "═" * 38 + "╗" + RESET)
-    # HCO Social Check in red, inside green box
-    print(G + "║" + RESET + " " * 2 + R + "HCO Social Check" + RESET + " " * 13 + G + "║" + RESET)
-    print(G + "╠" + "═" * 38 + "╣" + RESET)
-    print(" " * 4 + Y + "By Azhar" + RESET)
-    print(G + "╚" + "═" * 38 + "╝" + RESET)
+    print(G + "╔" + "═"*45 + "╗")
+    print(f"║   {R}HCO SOCIAL CHECK{RESET}{G}{' ' * 20}║")
+    print("╠" + "═"*45 + "╣")
+    print("║" + " " * 17 + Y + "By Azhar" + G + " " * 16 + "║")
+    print("╚" + "═"*45 + "╝" + RESET)
     print()
 
-def tool_lock(countdown=10):
+def tool_lock():
     clear()
-    print(R + "⚠  THIS TOOL IS NOT FREE  ⚠" + RESET)
-    print(Y + "You must subscribe to Hackers Colony Tech to use this tool." + RESET)
+    print(R + "⚠ THIS TOOL IS NOT FREE ⚠" + RESET)
+    print(Y + "Subscribe to Hackers Colony Tech to unlock." + RESET)
     print()
-    print(C + f"Redirecting to YouTube in {countdown} seconds..." + RESET)
-    for i in range(countdown, 0, -1):
-        print(f"{G}Redirecting in {i} seconds...{RESET}", end="\r")
+
+    for i in range(10, 0, -1):
+        print(f"{G}Redirecting in {i} sec...{RESET}", end="\r")
         time.sleep(1)
 
-    try:
-        webbrowser.open(YOUTUBE_LINK)
-    except:
-        pass
-
-    print()
-    input(C + "After subscribing, press ENTER to continue..." + RESET)
+    open_youtube()
+    input(C + "\nAfter subscribing, press ENTER to continue..." + RESET)
     clear()
 
-def check_url_head(url, timeout=6):
+def real_check(url):
     try:
-        r = requests.head(url, allow_redirects=True, timeout=timeout)
-        return r.status_code
-    except requests.RequestException:
-        # fallback to GET if HEAD fails for some sites
-        try:
-            r = requests.get(url, allow_redirects=True, timeout=timeout)
-            return r.status_code
-        except requests.RequestException:
-            return None
+        r = requests.get(url, timeout=8, allow_redirects=True)
+        if r.status_code == 200:
+            return "TAKEN"
+        elif r.status_code == 404:
+            return "FREE"
+        else:
+            return "UNKNOWN"
+    except:
+        return "ERROR"
 
 def social_check(username):
-    print()
-    print(C + f"Checking username: {username}" + RESET)
-    print(G + "-" * 40 + RESET)
 
     platforms = {
         "Instagram": f"https://www.instagram.com/{username}",
@@ -81,48 +93,54 @@ def social_check(username):
         "YouTube": f"https://www.youtube.com/@{username}",
         "StackOverflow": f"https://stackoverflow.com/users/{username}",
         "Facebook": f"https://www.facebook.com/{username}",
-        "Dribbble": f"https://dribbble.com/{username}",
+        "Discord": f"https://discord.com/users/{username}",
         "Behance": f"https://www.behance.net/{username}",
-        "Discord (invite)": f"https://discord.com/users/{username}",
+        "Dribbble": f"https://dribbble.com/{username}",
+        "Tumblr": f"https://{username}.tumblr.com",
+        "WordPress": f"https://{username}.wordpress.com",
+        "Vimeo": f"https://vimeo.com/{username}",
+        "SoundCloud": f"https://soundcloud.com/{username}",
+        "GitLab": f"https://gitlab.com/{username}",
+        "Kaggle": f"https://www.kaggle.com/{username}",
+        "Goodreads": f"https://www.goodreads.com/{username}",
+        "Patreon": f"https://www.patreon.com/{username}",
+        "Replit": f"https://replit.com/@{username}",
+        "DeviantArt": f"https://www.deviantart.com/{username}",
+        "Archive.org": f"https://archive.org/details/@{username}",
+        "BuyMeACoffee": f"https://www.buymeacoffee.com/{username}",
     }
 
-    for site, url in platforms.items():
-        status = check_url_head(url)
-        if status is None:
-            print(f"{Y}{site:<18} : ERROR ❗{RESET}")
-        else:
-            # treat 200 as taken, 301/302 as taken, 404 as available
-            if status == 200 or str(status).startswith(("3", "4")) is False:
-                # If status is 200 or 3xx treat as taken; else if 404 treat as available.
-                if status == 404:
-                    print(f"{G}{site:<18} : AVAILABLE ❌{RESET}")
-                else:
-                    print(f"{R}{site:<18} : TAKEN ✔{RESET}")
-            else:
-                # common cases: 301/302/200 -> taken; 404 -> available
-                if status in (301, 302, 200):
-                    print(f"{R}{site:<18} : TAKEN ✔{RESET}")
-                elif status == 404:
-                    print(f"{G}{site:<18} : AVAILABLE ❌{RESET}")
-                else:
-                    print(f"{Y}{site:<18} : UNKNOWN ({status}){RESET}")
+    # MATRIX hacker intro
+    matrix_effect(14)
 
-    print()
-    print(G + "-" * 40 + RESET)
-    print(Y + "Scan Complete!" + RESET)
-    print()
+    print(C + f"\nScanning username: {username}" + RESET)
+    print(G + "-" * 45 + RESET)
+
+    for site, url in platforms.items():
+        hacker_spinner(f"Scanning {site}...")
+        status = real_check(url)
+
+        if status == "TAKEN":
+            print(f"{site:<18}: {R}TAKEN ✔{RESET}")
+        elif status == "FREE":
+            print(f"{site:<18}: {G}AVAILABLE ❌{RESET}")
+        elif status == "UNKNOWN":
+            print(f"{site:<18}: {Y}UNKNOWN ⚠{RESET}")
+        else:
+            print(f"{site:<18}: {Y}ERROR ❗{RESET}")
+
+        time.sleep(random.uniform(0.1, 0.4))
+
+    print(G + "-" * 45 + RESET)
+    print(C + "REAL Scan Completed!" + RESET)
 
 def main():
-    try:
-        tool_lock(countdown=10)
-        banner()
-        username = input(C + "Enter a username to check: " + RESET).strip()
-        if not username:
-            print(Y + "No username provided. Exiting." + RESET)
-            return
-        social_check(username)
-    except KeyboardInterrupt:
-        print("\n" + Y + "Interrupted by user. Exiting." + RESET)
+    tool_lock()
+    banner()
+    username = input(C + "Enter a username to scan: " + RESET).strip()
+    clear()
+    progress_bar("Initializing Scanner")
+    social_check(username)
 
 if __name__ == "__main__":
     main()
